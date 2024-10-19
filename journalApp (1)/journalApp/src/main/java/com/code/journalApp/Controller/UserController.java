@@ -24,8 +24,8 @@ public class UserController {
     public void createUser(@RequestBody User user){
         userService.saveEntry(user);
     }
-    @PutMapping
-    public ResponseEntity<?> updateUser(@RequestBody User user){
+    @PutMapping("/{userName}")
+    public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable String userName){
   User userINDb = userService.findByUserName(user.getUserName());
   if(userINDb != null){
       userINDb.setUserName(user.getUserName());

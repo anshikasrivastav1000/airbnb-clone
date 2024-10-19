@@ -1,6 +1,7 @@
 package com.code.journalApp.service;
 
 import com.code.journalApp.entity.JournalEntry;
+import com.code.journalApp.entity.User;
 import com.code.journalApp.repository.JournalEntryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -20,11 +21,17 @@ public class JournalEntryService {
 
     @Autowired
     private JournalEntryRepository journalEntryRepository;
+    @Autowired
+    private UserService userService;
 
-    public void saveEntry(JournalEntry journalEntry){
+    public void saveEntry(JournalEntry journalEntry, String userName){
         try {
+            User user = userService.findByUserName(userName);
             journalEntry.setDate(LocalDateTime.now());
-            journalEntryRepository.save(journalEntry);
+             JournalEntry saved = journalEntryRepository.save(journalEntry);
+             user.getJournalEntries().add(saved);
+             userService.saveEntry(user);
+
         }
     catch (Exception e){
             log.error("Exception",e);

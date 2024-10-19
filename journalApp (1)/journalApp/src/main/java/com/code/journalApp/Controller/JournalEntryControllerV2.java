@@ -1,7 +1,9 @@
 package com.code.journalApp.Controller;
 
 import com.code.journalApp.entity.JournalEntry;
+import com.code.journalApp.entity.User;
 import com.code.journalApp.service.JournalEntryService;
+import com.code.journalApp.service.UserService;
 import org.apache.coyote.Response;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +27,12 @@ public class JournalEntryControllerV2 {
 
     @Autowired
     private JournalEntryService journalEntryService;
-
-    @GetMapping
-    public ResponseEntity<?> getAll(){
-        List<JournalEntry> all = journalEntryService.getAll();
+    @Autowired
+    private UserService userService;
+    @GetMapping("{userName}")
+    public ResponseEntity<?> getAllJournalEntriesOfUser(@PathVariable String userName){
+        User user = userService.findByUserName(userName);
+        List<JournalEntry> all = user.getJournalEntries();
         if(all != null && !all.isEmpty()){
 
         return new  ResponseEntity<>(all,HttpStatus.OK);
@@ -36,12 +40,12 @@ public class JournalEntryControllerV2 {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    @PostMapping
-    public  ResponseEntity<JournalEntry>  createEntry(@RequestBody JournalEntry myEntry){
+    @PostMapping("{userName}")
+    public  ResponseEntity<JournalEntry>  createEntry(@RequestBody JournalEntry myEntry , @PathVariable String userName){
 
         try {
 
-            journalEntryService.saveEntry(myEntry);
+            journalEntryService.saveEntry(myEntry,userName);
             return new ResponseEntity<>(myEntry, HttpStatus.CREATED);
         }catch (Exception e) {
 
@@ -73,12 +77,12 @@ public class JournalEntryControllerV2 {
     @PutMapping ("/id/{id}")
     public ResponseEntity<?> updateJournalEntryById(@PathVariable ObjectId id,@RequestBody JournalEntry newEntry){
         JournalEntry old = journalEntryService.findById(id).orElse(null);
-        if(old != null){
-            old.setTitle(newEntry.getTitle()!= null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle());
-            old.setContent(newEntry.getContent() != null && newEntry.equals("") ? newEntry.getContent() : old.getContent());
-            journalEntryService.saveEntry(old);
-            return new ResponseEntity<>(old,HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }};
+//        if(old != null){
+//            old.setTitle(newEntry.getTitle()!= null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle());
+//            old.setContent(newEntry.getContent() != null && newEntry.equals("") ? newEntry.getContent() : old.getContent());
+//            journalEntryService.saveEntry(old,user);
+//            return new ResponseEntity<>(old,HttpStatus.OK);
+//        }
+//
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+    }
