@@ -1,11 +1,10 @@
 package com.codingshuttle.project.airBnbApp.entity;
 
 import jakarta.persistence.Embeddable;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+
+@Data
 @Embeddable
 public class HotelContactInfo {
     private String address;
